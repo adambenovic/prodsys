@@ -1,0 +1,11 @@
+Peter je rodič Jano
+Peter je rodič Vlado
+manželia Peter Eva
+Vlado je rodič Maria
+Vlado je rodič Viera
+muž Peter
+muž Jano
+muž Vlado
+žena Maria
+žena Viera
+žena Eva

@@ -1,13 +1,53 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 class IO {
-    public ArrayList<Rule> loadFromFile(String filename) {
+    public ArrayList<Rule> loadRules(String filename) {
         ArrayList<Rule> rules = new ArrayList<>();
-        String line ;
+        String line = "empty";
         Rule newRule;
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(filename));
+
+            try {
+                while(line != null)
+                {
+                    line = reader.readLine();
+                    newRule = new Rule(line.replace(Enum.NAME, ""));
+
+                    line = reader.readLine();
+                    newRule.setConditions(this.splitConditions(line.replace(Enum.IF, "")));
+
+                   line = reader.readLine();
+                   newRule.setActions(this.splitLine(line.replace(Enum.THEN, "")));
+
+                   rules.add(newRule);
+
+                    line = reader.readLine();
+                }
+            }
+            catch (IOException e)
+            {
+                System.out.println( "Unable to read " + filename + ".");
+                System.exit(11);
+            }
+        }
+        catch ( FileNotFoundException e)
+        {
+            System.out.println( "File " + filename + " not found." );
+            System.exit(11);
+        }
+
+
+        return rules;
+    }
+
+    public ArrayList<String> loadMemory(String filename) {
+        ArrayList<String> memory = new ArrayList<>();
+        String line = "empty";
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(filename));
@@ -17,107 +57,84 @@ class IO {
 
                 while(line != null)
                 {
-                    newRule = this.processLine(line);
-                    if(newRule != null)
-                        rules.add(newRule);
+                    memory.add(line);
                     line = reader.readLine();
+
                 }
             }
             catch (IOException e)
             {
                 System.out.println( "Unable to read " + filename + ".");
-                System.exit(Enum.EXIT_READ_EXCEPTION);
+                System.exit(11);
             }
         }
         catch ( FileNotFoundException e)
         {
             System.out.println( "File " + filename + " not found." );
-            System.exit(Enum.EXIT_FILE_NOT_FOUND);
+            System.exit(11);
         }
 
-        if(gardens.isEmpty()) {
-            System.out.println("Invalid garden/s entered in the file " + filename + ".");
-            System.exit(Enum.EXIT_FILE_INVALID_SCHEME);
-        }
 
-        return gardens;
+        return memory;
     }
 
-    private Rule processLine(String line) {
-        Matcher matcher = Pattern.compile("([0-9]+)").matcher(line);
-        ArrayList<Integer> input = new ArrayList<>();
+    private ArrayList<Condition> splitConditions(String line) {
+        ArrayList<String> textConditions = splitLine(line);
+        ArrayList<Condition> conditions = new ArrayList<>();
 
-        while (matcher.find())
-            input.add(Integer.parseInt(matcher.group(0)));
-
-        int height = input.get(1);
-        int width = input.get(0);
-
-        Rule rule  = new Rule();
-
-        for (int i = 2; i < input.size(); i+=2) {
-            garden.setStone(input.get(i), input.get(i + 1));
-            garden.incStones();
+        for (String str : textConditions) {
+            conditions.add(new Condition(str));
         }
 
-        garden.setToBeRaked();
-        garden.computeMaxGenes();
-
-        return rule;
+        return conditions;
     }
 
-    public void writeToFile(ArrayList<Solution> solutions, String filename) {
-        if(solutions.isEmpty()) {
-            System.out.println("No solutions found.");
-            System.exit(Enum.EXIT_SOLUTION_NONE);
-        }
+    private ArrayList<String> splitLine(String line) {
+        String[] data;
+        Pattern pattern = Pattern.compile(",");
+        data = pattern.split(line);
 
-        BufferedWriter writer = null;
-
-        try {
-            writer = new BufferedWriter(new FileWriter(filename));
-        }
-        catch (IOException e)
-        {
-            System.out.println( "Unable to open " + filename + " for writing.");
-            System.exit(Enum.EXIT_WRITE_EXCEPTION);
-        }
-
-        int i = 1;
-        for (Solution solution: solutions) {
-            try {
-                writer.write("Solution no." + i +":\n");
-                ArrayList<String> lines = mapToLines(solution.getMap(), solution.getHeight(), solution.getWidth());
-                for (String line: lines)
-                    writer.write(line + '\n');
-
-                writer.write("Run time = " + solution.getRunTime() + "ms\n\n");
-            } catch (IOException e)
-            {
-                System.out.println( "Unable to write to " + filename + ".");
-                System.exit(Enum.EXIT_WRITE_EXCEPTION);
-            }
-        }
-
-        try {
-            writer.close();
-        } catch (IOException e) {
-            System.out.println( "Unable to close " + filename + ".");
-            System.exit(Enum.EXIT_FILE_CLOSE);
-        }
+        return new ArrayList<>(Arrays.asList(data));
     }
 
-    private ArrayList<String> mapToLines(int[][] map, int height, int width) {
-        ArrayList<String> result = new ArrayList<>();
-
-        for (int i = 0; i < height; i++) {
-            StringBuilder line = new StringBuilder();
-            for (int j = 0; j < width; j++) {
-                line.append(String.format("%5d", map[i][j]));
-            }
-            result.add(line.toString());
-        }
-
-        return result;
-    }
+//    public void writeToFile(ArrayList<Solution> solutions, String filename) {
+//        if(solutions.isEmpty()) {
+//            System.out.println("No solutions found.");
+//            System.exit(Enum.EXIT_SOLUTION_NONE);
+//        }
+//
+//        BufferedWriter writer = null;
+//
+//        try {
+//            writer = new BufferedWriter(new FileWriter(filename));
+//        }
+//        catch (IOException e)
+//        {
+//            System.out.println( "Unable to open " + filename + " for writing.");
+//            System.exit(Enum.EXIT_WRITE_EXCEPTION);
+//        }
+//
+//        int i = 1;
+//        for (Solution solution: solutions) {
+//            try {
+//                writer.write("Solution no." + i +":\n");
+//                ArrayList<String> lines = mapToLines(solution.getMap(), solution.getHeight(), solution.getWidth());
+//                for (String line: lines)
+//                    writer.write(line + '\n');
+//
+//                writer.write("Run time = " + solution.getRunTime() + "ms\n\n");
+//            } catch (IOException e)
+//            {
+//                System.out.println( "Unable to write to " + filename + ".");
+//                System.exit(Enum.EXIT_WRITE_EXCEPTION);
+//            }
+//        }
+//
+//        try {
+//            writer.close();
+//        } catch (IOException e) {
+//            System.out.println( "Unable to close " + filename + ".");
+//            System.exit(Enum.EXIT_FILE_CLOSE);
+//        }
+//    }
 }
