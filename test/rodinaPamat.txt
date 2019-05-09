@@ -9,3 +9,10 @@ muž Vlado
 žena Maria
 žena Viera
 žena Eva
+muž Adam
+žena Andrea
+Adam je rodič Matej
+Andrea je rodič Matej
+Andrea je rodič Anička
+žena Anička
+muž Matej

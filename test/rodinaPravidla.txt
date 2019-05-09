@@ -22,9 +22,21 @@ Meno: Brat
 AK ?Y a ?Z su surodenci,muž ?Y
 POTOM pridaj ?Y je brat ?Z
 
+Meno: Sestra
+AK ?Y a ?Z su surodenci, žena ?Y
+POTOM pridaj ?Y je sestra ?Z
+
 Meno: Stryko
 AK ?Y je brat ?Z,?Z je rodič ?X
 POTOM pridaj ?Y je stryko ?X,sprava ?X ma stryka
+
+Meno: Syn
+AK ?X je rodič ?Y,muž ?Y,<> ?X ?Y
+POTOM pridaj ?Y je syn ?X,sprava ?Y je syn ?X
+
+Meno: Dcéra
+AK ?X je rodič ?Y,žena ?Y,<> ?X ?Y
+POTOM pridaj ?Y je dcéra ?X, sprava ?Y je dcéra ?X
 
 Meno: Test mazania
 AK ?Y je stryko ?X,žena ?X
